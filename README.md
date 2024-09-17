@@ -1,4 +1,4 @@
-# BiglyBT qBittorrent Migrator
+# BiglyBT qBittorrent Migrator (Proof of concept)
 
 ## Step.0 Upgrade Java installation
 
