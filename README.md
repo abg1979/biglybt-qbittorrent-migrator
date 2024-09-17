@@ -1,5 +1,13 @@
 # BiglyBT qBittorrent Migrator (Proof of concept)
 
+## Setttings that can preserved
+
+* Torrent display name
+* Torrent upload/download speed limit settings
+* Torrent categories
+* Torrent tags
+* Torrent save path settings
+
 ## Step.0 Upgrade Java installation
 
 This plugin write for Java 11+, so you need upgrade your Java installation to 11 and up.
