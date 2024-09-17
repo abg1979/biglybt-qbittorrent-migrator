@@ -10,7 +10,7 @@
 
 ## Step.0 Upgrade Java installation
 
-This plugin write for Java 11+, so you need upgrade your Java installation to 11 and up.
+This plugin write for Java 11+, so you need upgrade your Java installation to 11 and up. You can [follow BigltBT's official guide to switch Java version](https://github.com/BiglySoftware/BiglyBT/wiki/Java-Versions).
 
 ## Step.1 Tweak BiglyBT settings
 
