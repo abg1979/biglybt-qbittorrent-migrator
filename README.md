@@ -35,11 +35,11 @@ Go `Plugins` and enter the new installed plugin's menu. (As you can see, there a
 
 Fill the WebUI information into inputs. (http://<host>:<port>) -> Host = Your qBittorrent machine IP (if they are on same machine, use `127.0.0.1`); Port = The port you have set in qBittorrent's WebUI settings.
 
-![image](https://github.com/user-attachments/assets/3196b4b5-f010-40e6-ad71-004ce9b198cc)
+![image](https://github.com/user-attachments/assets/a4bb985e-c92b-41ee-b689-b412ab57693d)
 
 And click **only once** `Execute/Migrate` button.
 
-![image](https://github.com/user-attachments/assets/a4bb985e-c92b-41ee-b689-b412ab57693d)
+![image](https://github.com/user-attachments/assets/3196b4b5-f010-40e6-ad71-004ce9b198cc)
 
 Your qBittorrent torrents should to your BiglyBT with preserved settings below:
 
@@ -50,4 +50,6 @@ Your qBittorrent torrents should to your BiglyBT with preserved settings below:
 * Torrent save path settings
 
 ![image](https://github.com/user-attachments/assets/971a2e0b-6c13-4ba7-9f71-10d706e45008)
+
+Once all torrents migrated, you can uninstall this migrator plugin from BiglyBT.
 
