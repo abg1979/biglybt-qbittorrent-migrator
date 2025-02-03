@@ -52,13 +52,13 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.name}</finalName>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <minimizeJar>false</minimizeJar>
                             <createSourcesJar>false</createSourcesJar>
                             <createTestSourcesJar>false</createTestSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>bin</shadedClassifierName>
                             <transformers>
                                 <transformer
                                         implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
@@ -102,10 +102,9 @@
     <dependencies>
         <dependency>
             <groupId>com.biglybt</groupId>
-            <artifactId>biglybt</artifactId>
-            <scope>system</scope>
+            <artifactId>biglybt-core</artifactId>
+            <scope>provided</scope>
             <version>3.4.0.1</version>
-            <systemPath>${project.basedir}/lib/BiglyBT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -128,11 +127,6 @@
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.10</version>
         </dependency>
     </dependencies>
 </project>

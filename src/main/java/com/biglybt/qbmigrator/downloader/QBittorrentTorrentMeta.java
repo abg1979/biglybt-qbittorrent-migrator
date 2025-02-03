@@ -1,4 +1,4 @@
-package com.ghostchu.peerbanhelper.downloaderplug.biglybt.qbmigrator.downloader;
+package com.biglybt.qbmigrator.downloader;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
