@@ -1,14 +1,13 @@
-package com.biglybt.qbmigrator.downloader;
+package com.biglybt.qbmigrator;
 
 import com.biglybt.core.tag.TagManager;
 import com.biglybt.core.tag.TagManagerFactory;
 import com.biglybt.core.tag.TagType;
 import com.biglybt.core.util.TorrentUtils;
 import com.biglybt.pif.PluginInterface;
+import com.biglybt.pif.download.DownloadException;
 import com.biglybt.pifimpl.local.download.DownloadImpl;
 import com.biglybt.pifimpl.local.torrent.TorrentImpl;
-import com.biglybt.qbmigrator.LoggingHelper;
-import com.biglybt.qbmigrator.MigratorPlugin;
 import com.github.mizosoft.methanol.FormBodyPublisher;
 import com.github.mizosoft.methanol.Methanol;
 import com.github.mizosoft.methanol.MutableRequest;
@@ -52,7 +51,33 @@ public class QBittorrent {
         return MigratorPlugin.get().logger();
     }
 
-    public void migrate(PluginInterface pif) {
+    private void log(PluginInterface pif, QBittorrentTorrentMeta qbTorrent) throws DownloadException, IOException, InterruptedException {
+        // check if this is already added
+        logger().info("Migrating torrent " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "] with state [" + qbTorrent.getHasMetadata() + "]...");
+        if (pif.getDownloadManager().getDownload(Hex.decode(qbTorrent.getHash())) != null) {
+            logger().info("Skipping torrent " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "] as it is already added.");
+            return;
+        }
+        if (!qbTorrent.getHasMetadata()) {
+            logger().info("Skipping torrent " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "] as it does not have metadata.");
+            return;
+        }
+        logger().info("Trying to download torrent file for " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "]");
+        downloadTorrent(qbTorrent.getHash());
+        logger().info("Downloaded torrent file for " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "]");
+        logger().info("Added download for " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "] with save path [" + qbTorrent.getSavePath() + "]");
+        if (!qbTorrent.getCategory().isBlank()) {
+            logger().info("Set category for " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "] to [" + qbTorrent.getCategory() + "]");
+        }
+        if (!qbTorrent.getTags().trim().isBlank()) {
+            for (String s : qbTorrent.getTags().split(",")) {
+                logger().info("Added tag [" + s + "] to " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "]");
+            }
+        }
+        logger().info("Successfully migrated torrent " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "]");
+    }
+
+    public void migrate(PluginInterface pif, boolean onlyLog) {
         if (!login()) {
             logger().error("Failed to login qBittorrent WebUI!");
             return;
@@ -60,14 +85,26 @@ public class QBittorrent {
         int success = 0;
         int failed = 0;
         logger().info("Migrating torrents from qBittorrent WebUI...");
-        for (QBittorrentTorrentMeta qbTorrent : getTorrentsMeta()) {
+        List<QBittorrentTorrentMeta> torrentsMeta = getTorrentsMeta();
+        int total = torrentsMeta.size();
+        for (QBittorrentTorrentMeta qbTorrent : torrentsMeta) {
             try {
-                // check if this is already added
-                if (pif.getDownloadManager().getDownload(Hex.decode(qbTorrent.getHash())) != null) {
-                    logger().info("Skipping torrent " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "] as it is already added.");
+                if (onlyLog) {
+                    log(pif, qbTorrent);
                     continue;
                 }
                 logger().info("Migrating torrent " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "]...");
+                // check if this is already added
+                if (pif.getDownloadManager().getDownload(Hex.decode(qbTorrent.getHash())) != null) {
+                    logger().info("Skipping torrent " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "] as it is already added.");
+                    success++;
+                    continue;
+                }
+                if (!qbTorrent.getHasMetadata()) {
+                    logger().info("Skipping torrent " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "] as it does not have metadata.");
+                    failed++;
+                    continue;
+                }
                 var torrentFile = downloadTorrent(qbTorrent.getHash());
                 logger().info("Downloaded torrent file for " + qbTorrent.getName() + " [" + qbTorrent.getHash() + "]");
                 var torrent = pif.getTorrentManager().createFromBEncodedData(torrentFile);
@@ -99,7 +136,7 @@ public class QBittorrent {
                 failed++;
             }
         }
-        logger().info("Migrated [" + success + "] torrents with [" + failed + "] fails.");
+        logger().info("Migrated torrents [Total|" + total +"] with [Success|" + success + "] with [Failure|" + failed + "].");
     }
 
     public byte[] downloadTorrent(String hash) throws IOException, InterruptedException {

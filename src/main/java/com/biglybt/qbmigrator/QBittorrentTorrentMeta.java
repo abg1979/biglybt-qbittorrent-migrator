@@ -1,4 +1,4 @@
-package com.biglybt.qbmigrator.downloader;
+package com.biglybt.qbmigrator;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
@@ -163,5 +163,8 @@ public final class QBittorrentTorrentMeta{
 
     @SerializedName("is_private")
     private Boolean privateTorrent;
+
+    @SerializedName("has_metadata")
+    private Boolean hasMetadata;
 
 }
